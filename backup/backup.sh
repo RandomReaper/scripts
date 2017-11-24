@@ -16,6 +16,8 @@
 #
 #############################################################################
 
+set -e
+
 if [ $# -ne 0 ]; then
     CONFIG_FILE=$1
 else
@@ -129,7 +131,7 @@ $SIM df -h $DESTINATION_DIR
 
 if [ "$DESTINATION_PARTITION" != "" ]; then
 	echo unmounting $DESTINATION_PARTITION
-	$SIM mount -o noatime $DESTINATION_PARTITION $DESTINATION_DIR
+	$SIM umount $DESTINATION_PARTITION
 fi
 
 $SIM echo "Backup end : $(date '+%F %T')"

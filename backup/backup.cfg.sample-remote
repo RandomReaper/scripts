@@ -16,11 +16,11 @@ DESTINATION_DIR="/mnt/backup"
 #
 # If set this partition will be automatically mounted/unmounted into
 # DESTINATION_DIR. 
-# Tip: use /dev/disk/by-path or by-id to make sure which disk is used
+# Tip: use /dev/disk/by-path, by-label, ... to make sure which disk is used
 # 
 # Example : DESTINATION_PARTITION="/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:0:0-part1"
 #
-DESTINATION_PARTITION="/dev/disk/by-id/pim-backup-1"
+DESTINATION_PARTITION="/dev/disk/by-label/pim-backup-1"
 
 #
 # SOURCE_DIRS_REMOTE -> List of remote source directories
