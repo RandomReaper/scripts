@@ -1,0 +1,39 @@
+#############################################################################
+# Sources and destination
+#
+#
+# DESTINATION_DIR -> backup destination
+#
+# This directory will be used as backup destination. if DESTINATION_PARTITION
+# is set, this partition will be mounted/unmounted as necessary.
+#
+# Example : DESTINATION_DIR="/mnt/backup"
+#
+DESTINATION_DIR="/mnt/backup"
+
+#
+# DESTINATION_PARTITION -> External disk partition
+#
+# If set this partition will be automatically mounted/unmounted into
+# DESTINATION_DIR. 
+# Tip: use /dev/disk/by-path or by-id to make sure which disk is used
+# 
+# Example : DESTINATION_PARTITION="/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:0:0-part1"
+#
+DESTINATION_PARTITION="/dev/disk/by-id/pim-backup-1"
+
+#
+# SOURCE_DIRS -> List of source directories
+#
+# rsync will stay in one file system, so for a complete backup
+# SOURCE_DIRS will be the list of the mount points
+#
+# SOURCE_DIRS is an existing array, so directories should be added like
+# this : SOURCE_DIRS+=("/etc")
+#
+
+SOURCE_DIRS+=("/")
+SOURCE_DIRS+=("/srv")
+
+#
+#############################################################################

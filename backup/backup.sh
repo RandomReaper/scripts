@@ -1,12 +1,12 @@
 #!/bin/bash
 #############################################################################
 #
-# \brief Backup script from a mounted system to a directory
+# \brief Backup script over ssh+rsync system to a directory
 #
 # \warning Don't change the RSYNC_FLAGS unless you know what you're doing ;)
 #
 # \url https://github.com/RandomReaper/scripts
-# 
+#
 # Copyright (c) 2017 Marc Pignat
 # SPDX-License-Identifier: 	Apache-2.0
 # License-Filename: LICENSE
@@ -16,32 +16,31 @@
 #
 #############################################################################
 
-#############################################################################
-# Sources and destination
-#
-#
-# DESTINATION_PARTITION -> External disk partition
-# Use /dev/disk/by-path or by-id to make sure which disk is used
-#
-DESTINATION_PARTITION="/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:0:0-part1"
+if [ $# -ne 0 ]; then
+    CONFIG_FILE=$1
+else
+	CONFIG_FILE="backup.cfg"
+fi
 
-#
-# DESTINATION_DIR -> Mount destination
-#
-DESTINATION_DIR="/mnt/backup"
+if [ ! -f "$CONFIG_FILE" ]; then
+	echo "configuration file $CONFIG_FILE not found"
+	echo
+	echo "usage: $0 [config_file] (or backup.cfg)"
+	exit 1
+fi
 
-#
-# SOURCE_DIRS -> List of source directories
-#
-# rsync will stay in one file system, so for a complete backup
-# SOURCE_DIRS will be the list of the mount points
-#
 SOURCE_DIRS=()
+SOURCE_DIRS_REMOTE=()
+DESTINATION_PARTITION=""
+DESTINATION_DIR=""
 
-SOURCE_DIRS+=("/")
-SOURCE_DIRS+=("/srv")
+source $CONFIG_FILE
 
-#
+if [ ${#SOURCE_DIRS[@]} -eq 0 ] && [ ${#SOURCE_DIRS_REMOTE[@]} -eq 0 ]; then
+	echo "SOURCE_DIRS and SOURCE_DIRS_REMOTE are both empty, nothing to do"
+	exit 0
+fi
+
 #############################################################################
 
 #############################################################################
@@ -62,7 +61,7 @@ RSYNC_FLAGS+=("--one-file-system")
 RSYNC_FLAGS+=("--archive")
 
 # Remote
-#RSYNC_FLAGS+=("-e ssh -T")
+RSYNC_FLAGS+=("-e ssh -T")
 
 # The files that need to be deleted should be deletet before xfer
 # (useful when the destination is tight in space)
@@ -85,9 +84,6 @@ RSYNC_FLAGS+=("--exclude=/var/run")
 
 #RSYNC_FLAGS+=("--compress")
 
-# RSYNC_FLAGS+=("--verbose" # for a more verbose script
-RSYNC_FLAGS+=("--verbose")
-
 #############################################################################
 # Now do the copy
 #
@@ -109,17 +105,31 @@ if [ "$VERBOSE" != "0" ]; then
 	RSYNC_FLAGS+=("--verbose")
 fi
 
-$SIM echo "Backup start : $(date '+%F %T')"
-$SIM mkdir -p $DESTINATION_DIR
-$SIM mount -o noatime $DESTINATION_PARTITION $DESTINATION_DIR || exit 1
+$SIM echo "Backup start : $(date '+%F %T') DESTINATION_DIR:$DESTINATION_DIR"
 
+if [ "$DESTINATION_PARTITION" != "" ]; then
+	echo mounting $DESTINATION_PARTITION
+
+	$SIM mount -o noatime $DESTINATION_PARTITION $DESTINATION_DIR
+fi
 for SRC in ${SOURCE_DIRS[@]}
 do
-	$SIM echo backup $SRC
-	$SIM mkdir -p "$DESTINATION_DIR$SRC"
+	echo backup $SRC
 	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR"
 done
+
+RSYNC_FLAGS+=("-e ssh -T")
+for SRC in ${SOURCE_DIRS_REMOTE[@]}
+do
+	echo backup $SRC
+	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR"
+done
+
 $SIM df -h $DESTINATION_DIR
-$SIM umount $DESTINATION_DIR
+
+if [ "$DESTINATION_PARTITION" != "" ]; then
+	echo unmounting $DESTINATION_PARTITION
+	$SIM mount -o noatime $DESTINATION_PARTITION $DESTINATION_DIR
+fi
 
 $SIM echo "Backup end : $(date '+%F %T')"
