@@ -1,10 +1,18 @@
 #!/bin/bash
 #############################################################################
 #
-# \brief Backup script from a mounted system to a directory
-# \author Author : Marc pignat (email : <firt name>@<last name>.org
+# \brief Backup script over ssh+rsync system to a directory
 #
 # \warning Don't change the RSYNC_FLAGS unless you know what you're doing ;)
+#
+# \url https://github.com/RandomReaper/scripts
+# 
+# Copyright (c) 2017 Marc Pignat
+# SPDX-License-Identifier: 	Apache-2.0
+# License-Filename: LICENSE
+#
+# \env SIM
+# \env VERBOSE
 #
 #############################################################################
 
@@ -13,6 +21,8 @@
 #
 DESTINATION_DIR="/backup"
 
+#############################################################################
+# Sources and destination
 #
 # SOURCE_DIRS -> List of source directories
 # rsync will stay in one file system, so for a complete backup
@@ -32,9 +42,9 @@ SOURCE_DIRS+=("root@SERVER_IP:/etc")
 #############################################################################
 # RSYNC_FLAGS -> Flags used by rsync for xfer
 #
-# Make sure rsync don't cross file system boundaries
-#
 RSYNC_FLAGS=()
+
+# Make sure rsync don't cross file system boundaries
 RSYNC_FLAGS+=("--one-file-system")
 
 # Recursive, permission, links, ... MUST be managed
@@ -62,22 +72,39 @@ RSYNC_FLAGS+=("--exclude=/var/lib/nagios3/spool/checkresults")
 RSYNC_FLAGS+=("--exclude=/var/lock")
 RSYNC_FLAGS+=("--exclude=/var/run")
 
-RSYNC_FLAGS+=("--compress")
+#RSYNC_FLAGS+=("--compress")
 
 # RSYNC_FLAGS+=("--verbose" # for a more verbose script
 RSYNC_FLAGS+=("--verbose")
 
-
 #############################################################################
+# Now do the copy
+#
+
+ionice -c3 -p $$
+renice 19 -p $$
+
+SIM=${SIM:-"0"}
+
+if [ "$SIM" != "0" ]; then
+	SIM="echo"
+else
+	SIM=""
+fi
+
+VERBOSE=${VERBOSE:-"0"}
+
+if [ "$VERBOSE" != "0" ]; then
+	RSYNC_FLAGS+=("--verbose")
+fi
 
 $SIM echo "Backup start : $(date '+%F %T')"
-DESTINATION_DIR=$DESTINATION_DIR
 
 for SRC in ${SOURCE_DIRS[@]}
 do
 	$SIM echo backup $SRC
 	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR"
 done
+$SIM df -h $DESTINATION_DIR
+
 $SIM echo "Backup end : $(date '+%F %T')"
-
-
