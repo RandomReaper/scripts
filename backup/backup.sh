@@ -16,8 +16,6 @@
 #
 #############################################################################
 
-set -e
-
 if [ $# -ne 0 ]; then
     CONFIG_FILE=$1
 else
@@ -113,7 +111,13 @@ if [ "$DESTINATION_PARTITION" != "" ]; then
 	echo mounting $DESTINATION_PARTITION
 
 	$SIM mount -o noatime $DESTINATION_PARTITION $DESTINATION_DIR
+	if [ $? -ne 0 ]; then
+    	echo mounting failed, exiting
+    	exit -1
+	fi
 fi
+
+
 for SRC in ${SOURCE_DIRS[@]}
 do
 	echo backup $SRC
