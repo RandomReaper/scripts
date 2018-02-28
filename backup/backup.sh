@@ -11,8 +11,8 @@
 # SPDX-License-Identifier: 	Apache-2.0
 # License-Filename: LICENSE
 #
-# \env SIM
-# \env VERBOSE
+# \env SIM when set to 1, will only echo commands (dry run)
+# \env VERBOSE when set to 1 more verbose message
 #
 #############################################################################
 
@@ -88,7 +88,10 @@ RSYNC_FLAGS+=("--exclude=/var/run")
 # Now do the copy
 #
 
+# Set IO priority to idle
 ionice -c3 -p $$
+
+# Set process priority to idle
 renice 19 -p $$
 
 SIM=${SIM:-"0"}
@@ -117,17 +120,16 @@ if [ "$DESTINATION_PARTITION" != "" ]; then
 	fi
 fi
 
-
-for SRC in ${SOURCE_DIRS[@]}
+for SRC in "${SOURCE_DIRS[@]}"
 do
-	echo backup $SRC
+	echo backup "$SRC"
 	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR"
 done
 
 RSYNC_FLAGS+=("-e ssh -T")
-for SRC in ${SOURCE_DIRS_REMOTE[@]}
+for SRC in "${SOURCE_DIRS_REMOTE[@]}"
 do
-	echo backup $SRC
+	echo backup "$SRC"
 	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR"
 done
 
