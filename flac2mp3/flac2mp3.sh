@@ -65,6 +65,8 @@ mp3s=( "${mp3s[@]/$SOURCE_DIR/$DEST_DIR}" )
 #############################################################################
 # Keep only files if flac have newer date than mp3, or mp3 does not exist
 #############################################################################
+echo ${#flacs[@]} flac files found 
+
 src=()
 dst=()
 for i in "${!mp3s[@]}"
