@@ -26,10 +26,13 @@ SOURCE_DIR="flac"
 # Relative output sub directory
 DEST_DIR="mp3-from-flac"
 
-
-# NOTE: see lame -v option for quality meaning
-LAME_QUALITY="0"
-
+# Encoding options (see lave -v)
+# For VBR
+#LAME_QUALITY_P1="-q:a"
+#LAME_QUALITY_P2="0"
+# For CBR
+LAME_QUALITY_P1="-ab"
+LAME_QUALITY_P2="192k"
 
 #############################################################################
 # Check required tools
@@ -74,6 +77,7 @@ done
 flacs=("${src[@]}")
 mp3s=("${dst[@]}")
 
+echo ${#mp3s[@]} files to convert
 
 #############################################################################
 # Create directories for the missing destination files
@@ -87,6 +91,12 @@ done
 #############################################################################
 # Now convert the files
 #############################################################################
-parallel --no-notice -k --link -q ::: avconv ::: -v ::: error ::: -i ::: "${flacs[@]}" ::: -codec:a ::: libmp3lame :::\
-	-q:a ::: "${LAME_QUALITY}" ::: "${mp3s[@]}"
+
+if [ ${#mp3s[@]} -eq 0 ]; then
+    exit 0
+fi
+
+parallel --no-notice -k --link -q --progress \
+	::: avconv ::: -y ::: -v ::: error ::: -i ::: "${flacs[@]}" ::: -codec:a ::: libmp3lame :::\
+	"${LAME_QUALITY_P1}" ::: "${LAME_QUALITY_P2}" ::: "${mp3s[@]}"
 
