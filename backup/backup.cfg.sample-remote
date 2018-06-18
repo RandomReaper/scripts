@@ -36,5 +36,16 @@ SOURCE_DIRS_REMOTE+=("root@SERVER_IP:/")
 SOURCE_DIRS_REMOTE+=("root@SERVER_IP:/etc/")
 
 #
+# EXCLUDE_SOURCE_DIRS -> List of source directories to exclude from backup
+#
+# Directories in this array will be excluded.
+#
+# EXCLUDE_SOURCE_DIRS is an existing array, so directories should be added like
+# this : EXCLUDE_SOURCE_DIRS+=("/var/lib/nagios3/spool/checkresults")
+#
+
+EXCLUDE_SOURCE_DIRS+=("/var/lib/nagios3/spool/checkresults")
+
+#
 #############################################################################
 
