@@ -32,7 +32,8 @@ DESTINATION_PARTITION="/dev/disk/by-label/pim-backup-1"
 # this : SOURCE_DIRS_REMOTE+=("/etc")
 #
 
-SOURCE_DIRS_REMOTE+=("root@SERVER_IP:/etc")
+SOURCE_DIRS_REMOTE+=("root@SERVER_IP:/")
+SOURCE_DIRS_REMOTE+=("root@SERVER_IP:/etc/")
 
 #
 #############################################################################

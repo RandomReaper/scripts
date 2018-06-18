@@ -29,11 +29,11 @@ DESTINATION_PARTITION="/dev/disk/by-label/pim-backup-1"
 # SOURCE_DIRS will be the list of the mount points
 #
 # SOURCE_DIRS is an existing array, so directories should be added like
-# this : SOURCE_DIRS+=("/etc")
+# this : SOURCE_DIRS+=("/etc/")
 #
 
 SOURCE_DIRS+=("/")
-SOURCE_DIRS+=("/srv")
+SOURCE_DIRS+=("/srv/")
 
 #
 #############################################################################

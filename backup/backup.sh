@@ -123,14 +123,14 @@ fi
 for SRC in "${SOURCE_DIRS[@]}"
 do
 	echo backup "$SRC"
-	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR"
+	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR/$SRC"
 done
 
 RSYNC_FLAGS+=("-e ssh -T")
 for SRC in "${SOURCE_DIRS_REMOTE[@]}"
 do
 	echo backup "$SRC"
-	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR"
+	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR/$SRC"
 done
 
 $SIM df -h $DESTINATION_DIR
