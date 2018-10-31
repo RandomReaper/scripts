@@ -1,7 +1,7 @@
 #!/bin/bash
 #############################################################################
 #
-# \brief Backup script over ssh+rsync system to a directory
+# \brief Backup to a local disk (from a mounted partition or a remote ssh host)
 #
 # \warning Don't change the RSYNC_FLAGS unless you know what you're doing ;)
 #
@@ -31,6 +31,7 @@ fi
 
 SOURCE_DIRS=()
 SOURCE_DIRS_REMOTE=()
+EXCLUDE_SOURCE_DIRS=()
 DESTINATION_PARTITION=""
 DESTINATION_DIR=""
 
@@ -74,9 +75,16 @@ RSYNC_FLAGS+=("--hard-links")
 # Manage sparse files
 RSYNC_FLAGS+=("--sparse")
 
+# Exclude dirs from config file
+
 # Now ignore those path..
 RSYNC_FLAGS+=("--exclude=/tmp")
 RSYNC_FLAGS+=("--exclude=/var/lib/nagios3/spool/checkresults")
+
+for EXCL in "${EXCLUDE_SOURCE_DIRS[@]}"
+do
+	RSYNC_FLAGS+=("--exclude=$EXCL")
+done
 
 # According to the FHS, those could be safely deleted
 RSYNC_FLAGS+=("--exclude=/var/lock")
@@ -123,14 +131,14 @@ fi
 for SRC in "${SOURCE_DIRS[@]}"
 do
 	echo backup "$SRC"
-	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR"
+	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR/$SRC"
 done
 
 RSYNC_FLAGS+=("-e ssh -T")
 for SRC in "${SOURCE_DIRS_REMOTE[@]}"
 do
 	echo backup "$SRC"
-	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR"
+	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR/$SRC"
 done
 
 $SIM df -h $DESTINATION_DIR
