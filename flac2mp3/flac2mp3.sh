@@ -21,10 +21,10 @@
 #############################################################################
 
 # Relative source sub directory
-SOURCE_DIR="flac"
+SOURCE_DIR="flac/"
 
 # Relative output sub directory
-DEST_DIR="mp3-from-flac"
+DEST_DIR="mp3-from-flac/"
 
 # Encoding options (see lave -v)
 # For VBR
@@ -43,6 +43,12 @@ command -v parallel >/dev/null 2>&1 || { echo >&2 "GNU parallel not found.  Abor
 parallel --no-notice --link echo ::: A B C ::: D E F >/dev/null 2>&1 || { echo >&2 "GNU parallel found, but verion < 20160422.  Aborting."; exit 1; }
 command -v avconv  >/dev/null 2>&1 || { echo >&2 "avconv not found.  Aborting."; exit 1; }
 
+# Set IO priority to idle
+ionice -c3 -p $$
+
+# Set process priority to idle
+renice 19 -p $$
+
 #############################################################################
 # Find FLAC files (by extension)
 #############################################################################
@@ -50,7 +56,6 @@ flacs=()
 while IFS=  read -r -d $'\0'; do
     flacs+=("$REPLY")
 done < <(find "$SOURCE_DIR" -iname "*.flac" -print0 | sort -zn)
-
 
 #############################################################################
 # Generate destination file list
@@ -65,7 +70,7 @@ mp3s=( "${mp3s[@]/$SOURCE_DIR/$DEST_DIR}" )
 #############################################################################
 # Keep only files if flac have newer date than mp3, or mp3 does not exist
 #############################################################################
-echo ${#flacs[@]} flac files found 
+echo ${#flacs[@]} flac files found
 
 src=()
 dst=()
