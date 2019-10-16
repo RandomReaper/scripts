@@ -14,7 +14,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-DEVICES="/dev/ttyS0 /dev/ttyUSB1"
+DEVICES="/dev/ttyS0 /dev/ttyUSB0"
 for DEV in $DEVICES
 do
 	ls "$DEV"
