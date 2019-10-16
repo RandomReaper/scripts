@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# @git git@github.com:RandomReaper/scripts.git/ cron.hourly
+#
+# @brief check if devices listed in DEVICES exist, reboot if device not found
+#
+# Putting this script in /etc/cron.hourly will do the check once an hour,
+# letting some time to fix the problem between reboots. Make sure the script
+# belongs to root and is executable (chmod 755 file and chown root:root file)
+#
+# Example, check the existence of /dev/ttyS0 /dev/ttyUSB1  :
+# DEVICES="/dev/ttyS0 /dev/ttyUSB1"
+#
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+DEVICES="/dev/ttyS0 /dev/ttyUSB1"
+for DEV in $DEVICES
+do
+	ls "$DEV"
+	if [ $? -eq 0 ]; then
+		:
+	else
+		logger -p syslog.alert "device $DEV missing -> reboot"
+		echo reboot
+	fi
+done

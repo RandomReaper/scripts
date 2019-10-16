@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# @git git@github.com:RandomReaper/scripts.git/ cron.hourly
+#
+# @brief check if an executable EXEC_NAME is running, else reboot.
+#
+# Putting this script in /etc/cron.hourly will do the check once an hour,
+# letting some time to fix the problem between reboots. Make sure the script
+# belongs to root and is executable (chmod 755 file and chown root:root file)
+#
+# Example, check if cii_MBUS is running :
+# EXEC_NAME="cii_MBUS"
+#
+
+#!/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+EXEC_NAME="cii_MBUS"
+
+pidof $EXEC_NAME
+
+if [ $? -eq 0 ]; then
+	:
+else
+	logger -p syslog.alert "$EXEC_NAME not running -> reboot"
+	echo reboot
+fi

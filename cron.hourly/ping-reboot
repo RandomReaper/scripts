@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# @git git@github.com:RandomReaper/scripts.git/ cron.hourly
+#
+# @brief check if the host HOST is pingable, else reboot
+#
+# Putting this script in /etc/cron.hourly will do the check once an hour,
+# letting some time to fix the problem between reboots. Make sure the script
+# belongs to root and is executable (chmod 755 file and chown root:root file)
+#
+# Example, check if "10.13.9.1" is pingable  :
+# HOST=10.4.0.1
+#
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+HOST=10.4.0.1
+
+ping -c5 $HOST
+
+if [ $? -eq 0 ]; then
+	:
+else
+	logger -p syslog.alert "$EXEC_NAME not running -> reboot"
+	reboot
+fi
