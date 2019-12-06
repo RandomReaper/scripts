@@ -7,7 +7,7 @@
 #
 # \url https://github.com/RandomReaper/scripts
 #
-# Copyright (c) 2017 Marc Pignat
+# Copyright (c) 2017-2019 Marc Pignat
 # SPDX-License-Identifier: 	Apache-2.0
 # License-Filename: LICENSE
 #
@@ -17,7 +17,7 @@
 #############################################################################
 
 if [ $# -ne 0 ]; then
-    CONFIG_FILE=$1
+	CONFIG_FILE=$1
 else
 	CONFIG_FILE="backup.cfg"
 fi
@@ -123,22 +123,23 @@ if [ "$DESTINATION_PARTITION" != "" ]; then
 
 	$SIM mount -o noatime $DESTINATION_PARTITION $DESTINATION_DIR
 	if [ $? -ne 0 ]; then
-    	echo mounting failed, exiting
-    	exit -1
+		echo mounting failed, exiting
+		exit -1
 	fi
 fi
 
 for SRC in "${SOURCE_DIRS[@]}"
 do
-	echo backup "$SRC"
+	echo backup "$SRC" into "$DESTINATION_DIR/$SRC"
 	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR/$SRC"
 done
 
 RSYNC_FLAGS+=("-e ssh -T")
 for SRC in "${SOURCE_DIRS_REMOTE[@]}"
 do
-	echo backup "$SRC"
-	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR/$SRC"
+	DST_DIR=${SRC//\//-}
+	echo backup "$SRC" into "$DESTINATION_DIR/$DST_DIR"
+	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR/$DST_DIR"
 done
 
 $SIM df -h $DESTINATION_DIR
