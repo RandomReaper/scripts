@@ -15,9 +15,9 @@ DESTINATION_DIR="/mnt/backup"
 # DESTINATION_PARTITION -> External disk partition
 #
 # If set this partition will be automatically mounted/unmounted into
-# DESTINATION_DIR. 
+# DESTINATION_DIR.
 # Tip: use /dev/disk/by-path, by-label, ... to make sure which disk is used
-# 
+#
 # Example : DESTINATION_PARTITION="/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:0:0-part1"
 #
 DESTINATION_PARTITION="/dev/disk/by-label/pim-backup-1"
