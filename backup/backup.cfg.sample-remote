@@ -51,7 +51,7 @@ EXCLUDE_SOURCE_DIRS+=("/var/lib/nagios3/spool/checkresults")
 #
 
 # Set port to 22, with aes128-ctr encryption, and disable compression
-#RSYNC_SSH_OPTION="ssh -T -p 22 -c aes128-ctr -o Compression=no"
+#RSYNC_SSH_OPTIONS="ssh -T -p 22 -c aes128-ctr -o Compression=no"
 
 #
 #############################################################################
