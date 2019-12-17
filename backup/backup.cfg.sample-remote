@@ -50,17 +50,8 @@ EXCLUDE_SOURCE_DIRS+=("/var/lib/nagios3/spool/checkresults")
 # RSYNC_SSH_OPTIONS -> low level options for ssh
 #
 
-# Set port to 1234
-#RSYNC_SSH_OPTIONS+=("-p 1234")
-
-# Disable compression (should be faster on fast link)
-RSYNC_SSH_OPTIONS+=("-o Compression=no")
-
-# Use a CPU-friendly algorithm (maybe less secure)
-#RSYNC_SSH_OPTIONS+=("-c arcfour128")
-
-
-
+# Set port to 22, with aes128-ctr encryption, and disable compression
+#RSYNC_SSH_OPTION="ssh -T -p 22 -c aes128-ctr -o Compression=no"
 
 #
 #############################################################################
