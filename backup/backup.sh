@@ -34,6 +34,9 @@ SOURCE_DIRS_REMOTE=()
 EXCLUDE_SOURCE_DIRS=()
 DESTINATION_PARTITION=""
 DESTINATION_DIR=""
+RSYNC_SSH_OPTIONS=()
+RSYNC_SSH_OPTIONS+=("ssh")
+RSYNC_SSH_OPTIONS+=("-T") # disable tty allocation
 
 source $CONFIG_FILE
 
@@ -60,9 +63,6 @@ RSYNC_FLAGS+=("--one-file-system")
 
 # Recursive, permission, links, ... MUST be managed
 RSYNC_FLAGS+=("--archive")
-
-# Remote
-RSYNC_FLAGS+=("-e ssh -T")
 
 # The files that need to be deleted should be deletet before xfer
 # (useful when the destination is tight in space)
@@ -138,8 +138,11 @@ RSYNC_FLAGS+=("-e ssh -T")
 for SRC in "${SOURCE_DIRS_REMOTE[@]}"
 do
 	DST_DIR=${SRC//\//-}
+	RSYNC_RSH=(${RSYNC_SSH_OPTIONS[@]})
+	export RSYNC_RSH
 	echo backup "$SRC" into "$DESTINATION_DIR/$DST_DIR"
 	$SIM rsync "${RSYNC_FLAGS[@]}" "$SRC" "$DESTINATION_DIR/$DST_DIR"
+
 done
 
 $SIM df -h $DESTINATION_DIR

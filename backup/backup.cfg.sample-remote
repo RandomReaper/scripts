@@ -47,4 +47,20 @@ SOURCE_DIRS_REMOTE+=("root@SERVER_IP:/etc/")
 EXCLUDE_SOURCE_DIRS+=("/var/lib/nagios3/spool/checkresults")
 
 #
+# RSYNC_SSH_OPTIONS -> low level options for ssh
+#
+
+# Set port to 1234
+#RSYNC_SSH_OPTIONS+=("-p 1234")
+
+# Disable compression (should be faster on fast link)
+RSYNC_SSH_OPTIONS+=("-o Compression=no")
+
+# Use a CPU-friendly algorithm (maybe less secure)
+#RSYNC_SSH_OPTIONS+=("-c arcfour128")
+
+
+
+
+#
 #############################################################################
